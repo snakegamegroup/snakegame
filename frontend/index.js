@@ -5,7 +5,7 @@ const SNAKE_COLOUR1 = '#AF10DA'
 const FOOD_COLOUR = '#871E10';
 
 //socket
-const socket = io('https://sleepy-island-33889.herokuapp.com/');
+const socket = io(' https://sleepy-falls-52998.herokuapp.com/');
 
 
 //When the socket is used handle all possible outcomes 
