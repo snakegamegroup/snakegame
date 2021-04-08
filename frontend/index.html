@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MultiPlayer Snake</title>
+  <link rel="shortcut icon" type="image/png" href="images/favicon.png">
+  <title>Snake Face Off</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link href="main.css" rel="stylesheet">
-  
-<style>
+  <style>
 #gameScreen {
+  display: none;
+}
+#gameOverScreen {
+  display: none;
+}
+#winnerScreen {
   display: none;
 }
 
@@ -47,8 +53,10 @@
          <h1>Welcome</h1>
         <p> This is our CP476 Final Project. A mulitplayer snake game using javascipt and socket.io. <br></br>
            By: Amber, Bryce and Kieara.</p>
-           <a href="proposal.pdf" download> </a>
-            <button>Proposal</button>  
+           <a href="proposal.pdf" download> 
+            <button>Proposal</button> </a>
+            <a href="https://github.com/snakegamegroup"> 
+            <button>GitHub Link</button>  </a> 
            </div>
     </div>
 
@@ -62,29 +70,32 @@
         <br></br>
         <br></br>
         <br></br>
-        <br></br>
-        <br></br>
         <h1>Instructions</h1>
-        <p> Players will use arrow keys to navigate. The goal is to reach the orange before the other player. <br></br>
-          Players will lose if they hit a wall or do not get to the organge first.</p>
+        <p>
+            Welcome to our Snake Game!<br>
+            This is a game with only two players. Here's how you can play the game: <br>
+            Ask a friend for the code to join a game or creat your own game.<br>
+            Use the arrow keys to navigate. Avoid hitting the wall or yourself - you'll end up losing!</br>
+            Good luck players!<br>
+          </p>
     </div>
   </div>
     
 
 
 
-  <section class="vh-100">
+  <section class="game vh-100">
     <div class="container h-100">
 
-      <div id="initialScreen" class="h-100">
+      <div id="initialScreen" class="initial h-100">
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
-            <h1>Multiplayer Snake</h1>
+            <h1>Snake Face Off</h1>
             <button
               type="submit"
               class="btn btn-success"
               id="newGameButton"
             >
-              Create A New Game
+              Create Game
             </button>
             <div>OR</div>
             <div class="form-group">
@@ -100,12 +111,39 @@
         </div>
       </div>
 
-      <div id="gameScreen" class="h-100">
+      <div id="gameScreen" class="gameScreen h-100">
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
 
           <h1>Your game code is: <span id="gameCodeDisplay"></span></h1>
 
           <canvas id="canvas"></canvas>
+        </div>
+      </div>
+
+      <div id="gameOverScreen" class="gameOver h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <h1>Game Over</h1>
+            <p>Better Luck Next Time</p>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="loserHomeScreenButton"
+            >
+              Home
+            </button>
+        </div>
+      </div>
+      <div id="winnerScreen" class="winner h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <h1>WINNER!!</h1>
+            <p>Great Win</p>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="homeScreenButton"
+            >
+              Home
+            </button>
         </div>
       </div>
 
@@ -116,5 +154,4 @@
   <script src="index.js"></script>
 </body>
 </html>
-
 
