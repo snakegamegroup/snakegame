@@ -1,6 +1,6 @@
-const { GRID_SIZE } = require('./constants');
-
-
+//constant for grid size 
+const { GRID_SIZE } = 20;
+//exports used for game_server.js
 module.exports = {
   initGame,
   gameLoop,
@@ -39,6 +39,7 @@ function getUpdatedVelocity(keyCode) {
 
 //function to create the game state
 function createGameState() {
+
   return {
     //players creation
     players: [{
@@ -59,6 +60,7 @@ function createGameState() {
         {x: 3, y: 10},
       ],
     }, 
+
     //player 2
     {
       //set position
@@ -83,6 +85,33 @@ function createGameState() {
     gridsize: GRID_SIZE,//get grid size 
   };
 }
+
+//function used to determine where to place the food and send it to the game
+function randomFood(state) {
+  food = {
+    //random number between 0 and gridsize
+    x: Math.floor(Math.random() * GRID_SIZE),
+    y: Math.floor(Math.random() * GRID_SIZE),
+  }
+
+  for (let cell of state.players[0].snake) {
+    //make sure food position is not on top of snake 1 body  
+    if (cell.x === food.x && cell.y === food.y) {
+      return randomFood(state);
+      //keep returning until food is a good position 
+    }
+  }
+
+  //loop make sure the food is not on player 2s body
+  for (let cell of state.players[1].snake) {
+    if (cell.x === food.x && cell.y === food.y) {
+      return randomFood(state);
+    }
+  }
+  //Set the food state
+  state.food = food;
+}
+
 
 //function to create the game loop 
 function gameLoop(state) {
@@ -155,28 +184,4 @@ function gameLoop(state) {
   }
 
   return false;
-}
-
-function randomFood(state) {
-  food = {
-    //random number between 0 and gridsize
-    x: Math.floor(Math.random() * GRID_SIZE),
-    y: Math.floor(Math.random() * GRID_SIZE),
-  }
-
-  for (let cell of state.players[0].snake) {
-    //make sure food position is not on top of snake 1 body  
-    if (cell.x === food.x && cell.y === food.y) {
-      return randomFood(state);
-      //keep returning until food is a good position 
-    }
-  }
-
-  for (let cell of state.players[1].snake) {
-    if (cell.x === food.x && cell.y === food.y) {
-      return randomFood(state);
-    }
-  }
-
-  state.food = food;
 }
