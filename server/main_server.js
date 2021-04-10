@@ -1,10 +1,11 @@
 //constants 
 const io = require('socket.io')(); 
-const { initGame, gameLoop, getUpdatedVelocity } = require('./game'); // use the game.js file
+const { initGame, gameLoop, getUpdatedVelocity } = require('./game_server'); // use the game.js file
 
 //create game state as soon as they join the game --> start sending the information
-const { FRAME_RATE } = require('./constants');
-const { makeid } = require('./utils');
+
+const { FRAME_RATE } = 10;
+const { makeid } = createID(5)
 
 const state = {};
 const clientRooms = {}; //allows us to look up the room name using a code, maps client.id to room name
@@ -13,15 +14,16 @@ const clientRooms = {}; //allows us to look up the room name using a code, maps 
 
 //allows us to communicate to the client everytime they join
 io.on('connection', client => {
-
+  //client size action handlers
   client.on('keydown', handleKeydown);
   client.on('newGame', handleNewGame);
   client.on('joinGame', handleJoinGame);
 
+  //function to handle joining the room
   function handleJoinGame(roomName) {
     const room = io.sockets.adapter.rooms[roomName];
 
-    let allUsers;
+    let allUsers; //create variable all users to keep track of users 
     if (room) {
       allUsers = room.sockets; //current users in the room, key is the client id
     }
@@ -85,6 +87,24 @@ io.on('connection', client => {
     }
   }
 });
+
+  /* Function to randomize and create a game code */
+  
+  function createID(size) {
+    //set the result string to empty
+    var result           = '';
+    //set of possible characters
+    var chars      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var charLength = chars.size;//get the characters length 
+    
+    //for the length given make a game id that long 
+    for ( var i = 0; i < size; i++ ) {
+       result += chars.charAt(Math.floor(Math.random() * charLength)); //selects random characters to generate an id
+    }
+ 
+    //return id
+    return result;
+ }
 
 //use set internal for our frame rate, easier to reset the interval
 //if we want to stop sending game data 
