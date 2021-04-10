@@ -7,7 +7,7 @@ const SNAKE_COLOUR1 = '#AF10DA';
 const FOOD_CORLOU = '#EE1818';
 
 //socket to connect to
-const socket = io('https://hidden-headland-31336.herokuapp.com/');
+const socket = io('https://sleepy-island-33889.herokuapp.com/');
 
 //Socket initialization 
 socket.on('init', handleInit);
