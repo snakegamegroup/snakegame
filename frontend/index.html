@@ -1,161 +1,151 @@
-const BG_COLOUR = '#000000';
-const SNAKE_COLOUR = '#E6A218';
-const SNAKE_COLOUR1 = '#AF10DA';
-const FOOD_COLOUR = '#EE1818';
-
-const socket = io('https://sleepy-island-33889.herokuapp.com/');
-
-socket.on('init', handleInit);
-socket.on('gameState', handleGameState);
-socket.on('gameOver', handleGameOver);
-socket.on('gameCode', handleGameCode);
-socket.on('unknownCode', handleUnknownCode);
-socket.on('tooManyPlayers', handleTooManyPlayers);
-
-const gameOverScreen = document.getElementById('gameOverScreen');
-const gameScreen = document.getElementById('gameScreen');
-const initialScreen = document.getElementById('initialScreen');
-const winnerScreen = document.getElementById('winnerScreen');
-const newGameBtn = document.getElementById('newGameButton');
-const joinGameBtn = document.getElementById('joinGameButton');
-const gameCodeInput = document.getElementById('gameCodeInput');
-const gameCodeDisplay = document.getElementById('gameCodeDisplay');
-const loserHomeScreenBtn = document.getElementById('loserHomeScreenButton');
-const homeScreenBtn = document.getElementById('homeScreenButton');
-
-newGameBtn.addEventListener('click', newGame);
-joinGameBtn.addEventListener('click', joinGame);
-loserHomeScreenBtn.addEventListener('click', home);
-homeScreenBtn.addEventListener('click', home);
-
-function newGame() {
-  socket.emit('newGame');
-  init();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Face Off</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+  
+<style>
+#gameScreen {
+  display: none;
+}
+#gameOverScreen {
+  display: none;
+}
+#winnerScreen {
+  display: none;
 }
 
-function joinGame() {
-  const code = gameCodeInput.value;
-  socket.emit('joinGame', code);
-  init();
-}
+</style>
+ 
+</head>
+<body>
 
-function home(){
-  reset();
-}
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+
+<!-- Background & animion & navbar & title -->
+  <div class="container-fluid">
+<!-- Background animtion-->
+    <div class="background">
+       <div class="cube"></div>
+       <div class="cube"></div>
+       <div class="cube"></div>
+       <div class="cube"></div>
+      <div class="cube"></div>
+    </div>
+<!-- header -->
+   <header>
+<!-- navbar -->
+     <nav class="navbar">
+        <ul>
+           <li><a href="#Introduction">Welcome</a></li>
+            <li><a href="#Instructions">Instructions</a></li>
+            <li><a href="#initialScreen">Start Game</a></li>
+         </ul>
+       </nav>
+<!-- title & content -->
+  
+<section id="Introduction"name="Introduction"></section>
+    
+    <div class="header-content">
+        <div id="Introduction">
+         <h1>Welcome</h1>
+        <p> This is our CP476 Final Project. A mulitplayer snake game using javascipt and socket.io. <br></br>
+           By: Amber, Bryce and Kieara.</p>
+           <a href="proposal.pdf" download> </a>
+            <button>Proposal</button>  
+           </div>
+    </div>
+
+    
+  </header>
+
+  <section id="Instructions"name="Instructions"></section>
+    <div class="instructions">
+      <div id="instructionsinfo">
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <h1>Instructions</h1>
+        <p> Players will use arrow keys to navigate. The goal is to cause the other player to Lose. <br></br>
+          Players will lose if they hit a wall or themselves.</p>
+    </div>
+  </div>
+    
 
 
-let canvas, ctx;
-let playerNumber;
-let gameActive = false;
 
-window.addEventListener("keydown", function(e) {
-  // space and arrow keys
-  if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-  e.preventDefault();
-}
-}, false);
-function init() {
-  initialScreen.style.display = "none";
-  gameScreen.style.display = "block";
-  gameOverScreen.style.display = "none";
-  winnerScreen.style.display = "none";
+  <section class="game vh-100">
+    <div class="container h-100">
 
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
+      <div id="initialScreen" class="initial h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <h1>Snake Face Off</h1>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="newGameButton"
+            >
+              Create Game
+            </button>
+            <div>OR</div>
+            <div class="form-group">
+              <input type="text" placeholder="Enter Game Code" id="gameCodeInput"/>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="joinGameButton"
+            >
+              Join Game
+            </button>
+        </div>
+      </div>
 
-  canvas.width = canvas.height = 600;
+      <div id="gameScreen" class="gameScreen h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
 
-  ctx.fillStyle = BG_COLOUR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+          <h1>Your game code is: <span id="gameCodeDisplay"></span></h1>
 
-  document.addEventListener('keydown', keydown);
-  gameActive = true;
-}
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
 
-function keydown(e) {
-  socket.emit('keydown', e.keyCode);
-}
+      <div id="gameOverScreen" class="gameOver h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <h1>Game Over</h1>
+            <p>Better Luck Next Time</p>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="loserHomeScreenButton"
+            >
+              Home
+            </button>
+        </div>
+      </div>
+      <div id="winnerScreen" class="winner h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+            <h1>WINNER!!</h1>
+            <p>Great Win</p>
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="homeScreenButton"
+            >
+              Home
+            </button>
+        </div>
+      </div>
 
-function paintGame(state) {
-  ctx.fillStyle = BG_COLOUR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    </div>
+  </section>
 
-  const food = state.food;
-  const gridsize = state.gridsize;
-  const size = canvas.width / gridsize;
-
-  ctx.fillStyle = FOOD_COLOUR;
-  ctx.fillRect(food.x * size, food.y * size, size, size);
-
-  paintPlayer(state.players[0], size, SNAKE_COLOUR);
-  paintPlayer(state.players[1], size, SNAKE_COLOUR1);
-}
-
-function paintPlayer(playerState, size, colour) {
-  const snake = playerState.snake;
-
-  ctx.fillStyle = colour;
-  for (let cell of snake) {
-    ctx.fillRect(cell.x * size, cell.y * size, size, size);
-  }
-}
-
-function handleInit(number) {
-  playerNumber = number;
-}
-
-function handleGameState(gameState) {
-  if (!gameActive) {
-    return;
-  }
-  gameState = JSON.parse(gameState);
-  requestAnimationFrame(() => paintGame(gameState));
-}
-
-function handleGameOver(data) {
-  if (!gameActive) {
-    return;
-  }
-  data = JSON.parse(data);
-
-  gameActive = false;
-
-  if (data.winner === playerNumber) {
-    winner();
-  } else {
-    gameOver();
-  }
-}
-
-function handleGameCode(gameCode) {
-  gameCodeDisplay.innerText = gameCode;
-}
-
-function handleUnknownCode() {
-  reset();
-  alert('Unknown Game Code')
-}
-
-function handleTooManyPlayers() {
-  reset();
-  alert('This game is already in progress');
-}
-
-function reset() {
-  playerNumber = null;
-  gameCodeInput.value = '';
-  initialScreen.style.display = "block";
-  gameScreen.style.display = "none";
-  gameOverScreen.style.display = "none";
-  winnerScreen.style.display = "none";
-}
-
-function gameOver(){
-  gameScreen.style.display = "none";
-  gameOverScreen.style.display = "block";
-}
-
-function winner(){
-  gameScreen.style.display = "none";
-  winnerScreen.style.display = "block";
-}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
