@@ -3,7 +3,7 @@ const SNAKE_COLOUR = '#E6A218';
 const SNAKE_COLOUR1 = '#AF10DA';
 const FOOD_COLOUR = '#EE1818';
 
-const socket = io(' https://sleepy-falls-52998.herokuapp.com/');
+const socket = io('https://hidden-headland-31336.herokuapp.com/');
 socket.on('init', handleInit);
 socket.on('gameState', handleGameState);
 socket.on('gameOver', handleGameOver);
