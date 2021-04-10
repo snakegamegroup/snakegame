@@ -7,7 +7,7 @@ const SNAKE_COLOUR1 = '#AF10DA';
 const FOOD_COLOUR = '#EE1818';
 
 //socket to connect to
-const socket = io('https://sleepy-island-33889.herokuapp.com/');
+const socket = io('https://dry-savannah-85415.herokuapp.com/');
 
 //Socket initialization 
 socket.on('init', handleInit);
@@ -28,6 +28,7 @@ const gameCodeInput = document.getElementById('gameCodeInput');
 const gameCodeDisplay = document.getElementById('gameCodeDisplay');
 const loserHomeScreenBtn = document.getElementById('loserHomeScreenButton');
 const homeScreenBtn = document.getElementById('homeScreenButton');
+
 
 //These are buttons to start the game, the click handlers
 newGameBtn.addEventListener('click', newGame);
