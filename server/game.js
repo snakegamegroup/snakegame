@@ -17,6 +17,25 @@ function initGame() {
   return state;
 }
 
+//accepts keycode and changes snake position 
+//based on arrow keys pressed 
+function getUpdatedVelocity(keyCode) {
+  //using switch case to handle seperate actions
+  switch (keyCode) {
+    case 37: { // left
+      return { x: -1, y: 0 };
+    }
+    case 38: { // down
+      return { x: 0, y: -1 };
+    }
+    case 39: { // right
+      return { x: 1, y: 0 };
+    }
+    case 40: { // up
+      return { x: 0, y: 1 };
+    }
+  }
+}
 
 //function to create the game state
 function createGameState() {
@@ -49,7 +68,7 @@ function createGameState() {
       },
       //set velocity 
       vel: {
-        x: 0,
+        x: -1,
         y: 0,
       },
       //snake blocks 
@@ -78,6 +97,7 @@ function gameLoop(state) {
   playerOne.pos.x += playerOne.vel.x;
   playerOne.pos.y += playerOne.vel.y;
 
+
   playerTwo.pos.x += playerTwo.vel.x;
   playerTwo.pos.y += playerTwo.vel.y;
   //make sure position is within the size of the canvas
@@ -98,6 +118,7 @@ function gameLoop(state) {
     //since foos is eaten must add another piece of food
     randomFood(state);
   }
+
   //check if the food position = player1 head position, if true we have eaten the food
   if (state.food.x === playerTwo.pos.x && state.food.y === playerTwo.pos.y) {
      //if food eaten the snake 2 will be one bigger 
@@ -106,6 +127,7 @@ function gameLoop(state) {
     playerTwo.pos.y += playerTwo.vel.y;
     randomFood(state);
   }
+
   //make sure snake 1 is moving before we move it around
   //snake shouldn't bump into itself
   if (playerOne.vel.x || playerOne.vel.y) {
@@ -115,6 +137,7 @@ function gameLoop(state) {
         return 2;
       }
     }
+    
     //snake body is one longer
     playerOne.snake.push({ ...playerOne.pos });
     playerOne.snake.shift();
@@ -156,23 +179,4 @@ function randomFood(state) {
   }
 
   state.food = food;
-}
-//accepts keycode and changes snake position 
-//based on arrow keys pressed 
-function getUpdatedVelocity(keyCode) {
-  //using switch case to handle seperate actions
-  switch (keyCode) {
-    case 37: { // left
-      return { x: -1, y: 0 };
-    }
-    case 38: { // down
-      return { x: 0, y: -1 };
-    }
-    case 39: { // right
-      return { x: 1, y: 0 };
-    }
-    case 40: { // up
-      return { x: 0, y: 1 };
-    }
-  }
 }
