@@ -34,8 +34,8 @@ function createGameState() {
         y: 10,
       },
       vel: {
-        x: -1,
-        y: 1,
+        x: 0,
+        y: 0,
       },
       snake: [
         {x: 20, y: 10},
