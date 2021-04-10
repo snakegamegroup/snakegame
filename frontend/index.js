@@ -1,223 +1,182 @@
-//constants and initialization for index.js
-
-//colours for snake, gamebackground and snake food
-const BG_COLOUR = '#000000';
-const SNAKE_COLOUR = '#E6A218';
-const SNAKE_COLOUR1 = '#AF10DA';
-const FOOD_COLOUR = '#EE1818';
-
-const socket = io('https://hidden-headland-31336.herokuapp.com/');
-
-//Socket initialization 
-socket.on('init', handleInit);
-socket.on('gameState', handleGameState); 
-socket.on('gameOver', handleGameOver);
-socket.on('gameCode', handleGameCode);
-socket.on('unknownCode', handleUnknownCode);
-socket.on('tooManyPlayers', handleTooManyPlayers);
-
-//Creating the buttons for each event
-const gameOverScreen = document.getElementById('gameOverScreen');
-const gameScreen = document.getElementById('gameScreen');
-const initialScreen = document.getElementById('initialScreen');
-const winnerScreen = document.getElementById('winnerScreen');
-const newGameBtn = document.getElementById('newGameButton');
-const joinGameBtn = document.getElementById('joinGameButton');
-const gameCodeInput = document.getElementById('gameCodeInput');
-const gameCodeDisplay = document.getElementById('gameCodeDisplay');
-const loserHomeScreenBtn = document.getElementById('loserHomeScreenButton');
-const homeScreenBtn = document.getElementById('homeScreenButton');
-
-//These are buttons to start the game, the click handlers
-newGameBtn.addEventListener('click', newGame);
-joinGameBtn.addEventListener('click', joinGame);
-loserHomeScreenBtn.addEventListener('click', home);
-homeScreenBtn.addEventListener('click', home);
+const { GRID_SIZE } = require('./constants');
 
 
-//initializing variables used 
-let canvas, ctx;
-let playerNumber;
-let gameActive = false;
-
-
-//Functions 
-
-//new game function to start a new game 
-function newGame() {
-  socket.emit('newGame');
-  init();
+module.exports = {
+  initGame,
+  gameLoop,
+  getUpdatedVelocity,
 }
 
-//grab hold of the game code that the user has entered
-function joinGame() {
-  const code = gameCodeInput.value;
-  socket.emit('joinGame', code); //already a string coming out of the input so we dont need to change anything
-  init();
+// function to initialze the game 
+function initGame() {
+  //call function to create the game state 
+  const state = createGameState()
+  //call random food to pick a random location
+  randomFood(state); 
+  //return the current state of the game
+  return state;
 }
 
-//function to go to the home screen if called
-function home(){
-  reset();
-}
-
-//event listener for key strokes to prevent the keys from scrolling during gameplay
-window.addEventListener("keydown", function(e) {
-  // space and arrows
-  if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-  e.preventDefault(); //prevent default cases
-}
-}, false);
-
-//function that sets everything up for initialization 
-function init() {
-  //picking which screen to show
-  initialScreen.style.display = "none";
-  gameScreen.style.display = "block";
-  gameOverScreen.style.display = "none";
-  winnerScreen.style.display = "none";
-
-  //get the game canvas 
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
-
-  //set the canvas size 
-  canvas.width = canvas.height = 600;
-
-  ctx.fillStyle = BG_COLOUR; //use the background colour at the top 
-
-
-  //completely fill the canvas with background colour
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
-  //add an event listener for keystrokes
-  document.addEventListener('keydown', keydown);
-
-  //set variable for the game being active to true
-  gameActive = true;
-}
-
-//event listener for keys
-function keydown(e) {
-  socket.emit('keydown', e.keyCode);
-  //numerical value that represents key pressed
-}
-
-
-//function to paint the current state of the game 
-function paintGame(state) {
-  //fil the ctx with the size of the canvas and the background colour 
-  ctx.fillStyle = BG_COLOUR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
-  //get the constant for the foods current state 
-  const food = state.food;
-  //set the current grid size 
-  const gridsize = state.gridsize; 
-  //calculates the pixel size per game space
-  const size = canvas.width / gridsize; 
-  ctx.fillStyle = FOOD_COLOUR;  //set the food colour 
-  //must convert the game space coordinates to pixel 
-  ctx.fillRect(food.x * size, food.y * size, size, size);
-
-  //call paint player function
-  paintPlayer(state.players[0], size, SNAKE_COLOUR); 
-  paintPlayer(state.players[1], size, SNAKE_COLOUR1);
-}
-
-//function to paint the player 
-function paintPlayer(playerState, size, colour) {
-  //get the current state of the player 
-  const snake = playerState.snake;
-  //set colour 
-  ctx.fillStyle = colour;
-  //for each cell in the snake convert to pixel size
-  for (let cell of snake) { 
-    //fill the snake 
-    ctx.fillRect(cell.x * size, cell.y * size, size, size);
+//accepts keycode and changes snake position 
+//based on arrow keys pressed 
+function getUpdatedVelocity(keyCode) {
+  //using switch case to handle seperate actions
+  switch (keyCode) {
+    case 37: { // left
+      return { x: -1, y: 0 };
+    }
+    case 38: { // down
+      return { x: 0, y: -1 };
+    }
+    case 39: { // right
+      return { x: 1, y: 0 };
+    }
+    case 40: { // up
+      return { x: 0, y: 1 };
+    }
   }
 }
 
-//handle an initialization function 
-function handleInit(number) {
-  //sets the players number 
-  playerNumber = number;
+//function to create the game state
+function createGameState() {
+  return {
+    //players creation
+    players: [{
+      //starting postitions
+      pos: {
+        x: 3,
+        y: 10,
+      },
+      //starting velocity
+      vel: {
+        x: 1,
+        y: 0,
+      },
+      //snake block sizes 
+      snake: [
+        {x: 1, y: 10},
+        {x: 2, y: 10},
+        {x: 3, y: 10},
+      ],
+    }, 
+    //player 2
+    {
+      //set position
+      pos: {
+        x: 18,
+        y: 10,
+      },
+      //set velocity 
+      vel: {
+        x: -1,
+        y: 0,
+      },
+      //snake blocks 
+      snake: [
+        {x: 20, y: 10},
+        {x: 19, y: 10},
+        {x: 18, y: 10},
+      ],
+    }],
+    //food var
+    food: {},
+    gridsize: GRID_SIZE,//get grid size 
+  };
 }
 
-//recieve game state from the server
-function handleGameState(gameState) { 
-  //if the game is finished
-  if (!gameActive) {
+//function to create the game loop 
+function gameLoop(state) {
+  if (!state) { //if not given a state just return 
     return;
   }
-  //if not get the new game state by requesting the new frame 
-  gameState = JSON.parse(gameState);
-  //everytime server sends a game state msg browser will recieve it and create the game
-  requestAnimationFrame(() => paintGame(gameState));
-}
 
-//handle what happens when the game is over 
-function handleGameOver(data) {
-  //if its not over leave
-  if (!gameActive) {
-    return;
+  const playerOne = state.players[0];
+  const playerTwo = state.players[1];
+  //update player position based on velocity 
+  //move the x and y positions accordingly 
+  playerOne.pos.x += playerOne.vel.x;
+  playerOne.pos.y += playerOne.vel.y;
+
+
+  playerTwo.pos.x += playerTwo.vel.x;
+  playerTwo.pos.y += playerTwo.vel.y;
+  //make sure position is within the size of the canvas
+  if (playerOne.pos.x < 0 || playerOne.pos.x > GRID_SIZE || playerOne.pos.y < 0 || playerOne.pos.y > GRID_SIZE) {
+    return 2; //if player one goes off the canvas --> player two has won
   }
-  
-  //get the data
-  data = JSON.parse(data);
 
-  //set active to false 
-  gameActive = false;
-
-
-  //call the winner and loser functions 
-  if (data.winner === playerNumber) {
-    winner();
-  } else {
-    gameOver();
+  if (playerTwo.pos.x < 0 || playerTwo.pos.x > GRID_SIZE || playerTwo.pos.y < 0 || playerTwo.pos.y > GRID_SIZE) {
+    return 1;
   }
+  //check if the food position = player1 head position, if true we have eaten the food
+  if (state.food.x === playerOne.pos.x && state.food.y === playerOne.pos.y) {
+    //if food eaten the snake 1 will be one bigger 
+    playerOne.snake.push({ ...playerOne.pos });
+    //increment the posistion to include added snake size 
+    playerOne.pos.x += playerOne.vel.x;
+    playerOne.pos.y += playerOne.vel.y;
+    //since foos is eaten must add another piece of food
+    randomFood(state);
+  }
+
+  //check if the food position = player1 head position, if true we have eaten the food
+  if (state.food.x === playerTwo.pos.x && state.food.y === playerTwo.pos.y) {
+     //if food eaten the snake 2 will be one bigger 
+    playerTwo.snake.push({ ...playerTwo.pos });
+    playerTwo.pos.x += playerTwo.vel.x;
+    playerTwo.pos.y += playerTwo.vel.y;
+    randomFood(state);
+  }
+
+  //make sure snake 1 is moving before we move it around
+  //snake shouldn't bump into itself
+  if (playerOne.vel.x || playerOne.vel.y) {
+    for (let cell of playerOne.snake) {
+      //if any head position is the same as a body position
+      if (cell.x === playerOne.pos.x && cell.y === playerOne.pos.y) {
+        return 2;
+      }
+    }
+    
+    //snake body is one longer
+    playerOne.snake.push({ ...playerOne.pos });
+    playerOne.snake.shift();
+  }
+
+  if (playerTwo.vel.x || playerTwo.vel.y) {
+    for (let cell of playerTwo.snake) {
+      if (cell.x === playerTwo.pos.x && cell.y === playerTwo.pos.y) {
+        return 1;
+      }
+    }
+
+    playerTwo.snake.push({ ...playerTwo.pos });
+    playerTwo.snake.shift();
+  }
+
+  return false;
 }
 
+function randomFood(state) {
+  food = {
+    //random number between 0 and gridsize
+    x: Math.floor(Math.random() * GRID_SIZE),
+    y: Math.floor(Math.random() * GRID_SIZE),
+  }
 
-//handle the game code given
-function handleGameCode(gameCode) {
-  gameCodeDisplay.innerText = gameCode;
+  for (let cell of state.players[0].snake) {
+    //make sure food position is not on top of snake 1 body  
+    if (cell.x === food.x && cell.y === food.y) {
+      return randomFood(state);
+      //keep returning until food is a good position 
+    }
+  }
+
+  for (let cell of state.players[1].snake) {
+    if (cell.x === food.x && cell.y === food.y) {
+      return randomFood(state);
+    }
+  }
+
+  state.food = food;
 }
-
-//handle the incorrect code 
-function handleUnknownCode() {
-  reset();
-  alert('Unknown Game Code: Try Again') // if the code is invalid 
-}
-
-//handle a third player trying to join 
-function handleTooManyPlayers() {
-  reset();
-  alert('That game is already in progress');
-}
-
-//function to reset the game to the start screen 
-function reset() {
-  playerNumber = null;
-  gameCodeInput.value = '';
-  initialScreen.style.display = "block";
-  gameScreen.style.display = "none";
-  gameOverScreen.style.display = "none";
-  winnerScreen.style.display = "none";
-}
-
-//game over function for losing player
-function gameOver(){
-  gameScreen.style.display = "none"; //turn off the game screeen
-  gameOverScreen.style.display = "block"; //turn on the game over screen
-}
-
-//winner function for the winning player 
-function winner(){
-  gameScreen.style.display = "none"; //turn off the game screen 
-  winnerScreen.style.display = "block";// turn on the winner screen
-}
-
- 
